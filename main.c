@@ -12,6 +12,10 @@
 
 #define TEST_DEVICE_NAME "hires-emu test device"
 
+static bool is_root()
+{
+	return (geteuid() == 0);
+}
 
 int main(int argc, char **argv)
 {
@@ -19,6 +23,11 @@ int main(int argc, char **argv)
 	int fd, uifd;
 	struct libevdev *dev;
 	struct libevdev_uinput *uidev;
+
+	if (!is_root()) {
+		printf("Please run as root\n");
+		return -1;
+	}
 
 	fd = open("/dev/input/event0", O_RDONLY);
 	if (fd < 0)
