@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <libevdev/libevdev.h>
@@ -12,7 +13,7 @@
 
 #define TEST_DEVICE_NAME "hires-emu test device"
 
-static bool is_root()
+static bool is_root(void)
 {
 	return (geteuid() == 0);
 }
