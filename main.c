@@ -10,12 +10,43 @@
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
+#define TEST_DEVICE_NAME	"hires-emu test device"
+#define SCROLL_RESOLUTION	8
+#define SCROLL_VALUE		(120 / SCROLL_RESOLUTION)
 
-#define TEST_DEVICE_NAME "hires-emu test device"
+enum scroll_dir {
+	SCROLL_UP,
+	SCROLL_DOWN,
+};
 
 static bool is_root(void)
 {
 	return (geteuid() == 0);
+}
+
+static bool emulate_scroll(struct libevdev_uinput *uidev, enum scroll_dir dir)
+{
+	int val = (dir == SCROLL_UP) ? -SCROLL_VALUE : SCROLL_VALUE;
+	int err;
+
+	err = libevdev_uinput_write_event(uidev, EV_REL, REL_WHEEL, val * 120);
+	if (err != 0)
+		return false;
+
+	for (int i = 0; i < SCROLL_RESOLUTION; i++) {
+		err = libevdev_uinput_write_event(uidev, EV_REL,
+						  REL_WHEEL_HI_RES, val);
+		if (err != 0)
+			return false;
+
+		err = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
+		if (err != 0)
+			return false;
+
+		usleep(100000);
+	}
+
+	return true;
 }
 
 int main(int argc, char **argv)
@@ -60,14 +91,9 @@ int main(int argc, char **argv)
 
 	sleep(1);
 
-	err = libevdev_uinput_write_event(uidev, EV_REL, REL_WHEEL_HI_RES, 15);
-	if (err != 0)
-		return err;
+	emulate_scroll(uidev, SCROLL_UP);
 
-	err = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-	if (err != 0)
-		return err;
-
+	sleep(1);
 	libevdev_uinput_destroy(uidev);
 	libevdev_free(dev);
 	close(uifd);
