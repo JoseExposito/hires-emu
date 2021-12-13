@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 	int fd, uifd;
 	struct libevdev *dev;
 	struct libevdev_uinput *uidev;
+	char command;
 
 	if (!is_root()) {
 		printf("Please run as root\n");
@@ -91,7 +92,18 @@ int main(int argc, char **argv)
 
 	sleep(1);
 
-	emulate_scroll(uidev, SCROLL_UP);
+	while (true) {
+		command = getchar();
+
+		switch (command) {
+		case 'u':
+			emulate_scroll(uidev, SCROLL_UP);
+			break;
+		case 'd':
+			emulate_scroll(uidev, SCROLL_DOWN);
+			break;
+		}
+	}
 
 	sleep(1);
 	libevdev_uinput_destroy(uidev);
