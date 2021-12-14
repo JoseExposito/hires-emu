@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 	int fd, uifd;
 	struct libevdev *dev;
 	struct libevdev_uinput *uidev;
+	bool exit = false;
 	char command;
 
 	if (!is_root()) {
@@ -92,10 +93,13 @@ int main(int argc, char **argv)
 
 	sleep(1);
 
-	while (true) {
+	while (!exit) {
 		command = getchar();
 
 		switch (command) {
+		case 'q':
+			exit = true;
+			break;
 		case 'u':
 			emulate_scroll(uidev, SCROLL_UP);
 			break;
