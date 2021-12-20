@@ -1,5 +1,6 @@
 project('hires-emu', 'c')
 
+ncurses = dependency('ncurses')
 libevdev = dependency('libevdev')
 
 
@@ -16,5 +17,5 @@ add_project_arguments(cflags, language: 'cpp')
 
 executable('hires-emu',
     'main.c',
-    dependencies: [libevdev]
+    dependencies: [libevdev, ncurses]
 )

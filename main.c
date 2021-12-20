@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <ncurses.h>
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
 	struct libevdev *dev;
 	struct libevdev_uinput *uidev;
 	bool exit = false;
-	char command;
+	int command;
 
 	if (!is_root()) {
 		printf("Please run as root\n");
@@ -93,8 +94,13 @@ int main(int argc, char **argv)
 
 	sleep(1);
 
+	/* Init ncurses and enable keypad */
+	initscr();
+	keypad(stdscr, true);
+	nodelay(stdscr, true);
+
 	while (!exit) {
-		command = getchar();
+		command = getch();
 
 		switch (command) {
 		case 'q':
@@ -114,6 +120,7 @@ int main(int argc, char **argv)
 	libevdev_free(dev);
 	close(uifd);
 	close(fd);
+	endwin();
 
 	return 0;
 }
