@@ -44,7 +44,7 @@ static bool emulate_scroll(struct libevdev_uinput *uidev, enum scroll_dir dir)
 		if (err != 0)
 			return false;
 
-		usleep(100000);
+		usleep(1000);
 	}
 
 	return true;
