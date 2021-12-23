@@ -27,16 +27,17 @@ static bool is_root(void)
 
 static bool emulate_scroll(struct libevdev_uinput *uidev, enum scroll_dir dir)
 {
-	int val = (dir == SCROLL_UP) ? SCROLL_VALUE : -SCROLL_VALUE;
+	int val_lr = (dir == SCROLL_UP) ? 1 : -1;
+	int val_hr = val_lr * SCROLL_VALUE;
 	int err;
 
-	err = libevdev_uinput_write_event(uidev, EV_REL, REL_WHEEL, val * 120);
+	err = libevdev_uinput_write_event(uidev, EV_REL, REL_WHEEL, val_lr);
 	if (err != 0)
 		return false;
 
 	for (int i = 0; i < SCROLL_RESOLUTION; i++) {
 		err = libevdev_uinput_write_event(uidev, EV_REL,
-						  REL_WHEEL_HI_RES, val);
+						  REL_WHEEL_HI_RES, val_hr);
 		if (err != 0)
 			return false;
 
