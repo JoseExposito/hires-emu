@@ -25,6 +25,14 @@ static bool is_root(void)
 	return (geteuid() == 0);
 }
 
+static void print_help(void)
+{
+	printw("High-resolution scroll emulator\n");
+	printw("Press 'u' to scroll up\n");
+	printw("Press 'd' to scroll down\n");
+	printw("Press 'q' to quit\n");
+}
+
 static bool emulate_scroll(struct libevdev_uinput *uidev, enum scroll_dir dir)
 {
 	int val_lr = (dir == SCROLL_UP) ? 1 : -1;
@@ -99,6 +107,8 @@ int main(int argc, char **argv)
 	initscr();
 	keypad(stdscr, true);
 	nodelay(stdscr, true);
+
+	print_help();
 
 	while (!exit) {
 		command = getch();
